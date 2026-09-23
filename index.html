@@ -880,10 +880,15 @@ details[open] summary::before{content:"\2013 "}
         row.appendChild(r===0?ptsEl("") :ptsEl("+"+o.pts,"earned"+(isLast?" pulse":"")));
       }else if(r===activeIdx){
         row.className+=" active"+(live?" legal":"");
-        var prev=cur(), marks=assignCarried(needLetters(),S.typed);
+        var marks=assignCarried(needLetters(),S.typed);
+        /* amber has to mean exactly what it means once the word is played:
+           new to the WHOLE chain, not merely absent from the previous word.
+           Same source the score reads, so the preview can never disagree. */
+        var chainSeen=seenMap();
         for(var j=0;j<5;j++){
           if(j<S.typed.length){
-            var k = marks.indexOf(j)>=0 ? "carried" : (prev.indexOf(S.typed[j])<0 ? "fresh" : "");
+            var k = marks.indexOf(j)>=0 ? "carried"
+                  : (chainSeen[S.typed[j]] ? "" : "fresh");
             row.appendChild(tileEl(S.typed[j],k));
           }else{
             var t=tileEl("","empty");
