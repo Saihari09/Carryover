@@ -29,9 +29,19 @@ The clock restarts on every word, so one long think won't sink a run.
 
 Tap **♪** in the header to mute sound and vibration.
 
+At the end you get points, letters and time as three headline numbers, a per-word breakdown,
+and a spoiler-free grid. **Share result** opens the phone's native share sheet where one
+exists (and attaches the game's link); elsewhere it falls back to copying to the clipboard.
+
 A move only needs *one* letter the previous word lacks to be legal — but scoring counts
 letters new to the **whole chain**. So a legal move can score zero. Seeing that coming is
 the game.
+
+## Screen sizes
+
+Laid out to fit entirely above the keyboard with no scrolling, verified from 320×568
+(original iPhone SE) up. Tiles and keys scale with viewport height; below 740px tall the
+tiles stop being square so the board loses height without losing width.
 
 ## Running it locally
 

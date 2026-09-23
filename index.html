@@ -253,24 +253,81 @@ details[open] summary::before{content:"\2013 "}
 .overlay{position:fixed; inset:0; z-index:50; background:var(--paper); display:grid; place-items:center; padding:16px; animation:fade .22s ease both}
 @supports (backdrop-filter:blur(1px)){.overlay{background:color-mix(in srgb,var(--paper) 86%,transparent); backdrop-filter:blur(8px)}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-.panel{width:100%; max-width:364px; max-height:100%; overflow-y:auto; background:var(--card); border:1px solid var(--rule); padding:18px; display:flex; flex-direction:column; gap:13px; position:relative}
-.panel .close{position:absolute; top:9px; right:9px; width:26px; height:26px; border:1px solid var(--rule); background:var(--card); color:var(--ink-2); cursor:pointer; font-size:14px; line-height:1}
-.panel h2{margin:0; font-size:15px; font-weight:700; letter-spacing:-.01em; line-height:1.45; padding-right:26px}
-.panel h2 em{font-style:normal; color:var(--ink-3); font-weight:400}
-.rank{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--reg)}
-.bigscore{display:flex; align-items:baseline; gap:8px}
-.bigscore .n{font-size:44px; font-weight:800; letter-spacing:-.045em; line-height:1; font-variant-numeric:tabular-nums}
-.bigscore .d{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.panel{width:100%; max-width:364px; max-height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  background:var(--card); border:1px solid var(--rule); padding:16px;
+  display:flex; flex-direction:column; gap:12px; position:relative}
+.panel .close{position:absolute; top:8px; right:8px; width:30px; height:30px; border:1px solid var(--rule);
+  background:var(--card); color:var(--ink-2); cursor:pointer; font-size:15px; line-height:1}
+.rank{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--reg); padding-right:34px}
+/* the three headline numbers */
+.finalstats{display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:6px;
+  border-block:1px solid var(--rule); padding-block:13px}
+.fs{display:flex; flex-direction:column; gap:3px; min-width:0}
+.fs .n{font-size:29px; font-weight:800; letter-spacing:-.05em; line-height:.95;
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.fs.hero .n{font-size:37px; color:var(--good)}
+.fs .k{font-family:var(--mono); font-size:8.5px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--ink-3)}
+.chainline{font-size:13px; font-weight:700; line-height:1.55; color:var(--ink); word-break:break-word}
+.chainline em{font-style:normal; color:var(--ink-3); font-weight:400; padding:0 1px}
 .break{display:flex; flex-direction:column; font-family:var(--mono); font-size:11px; color:var(--ink-2)}
 .break .r{display:flex; justify-content:space-between; gap:10px; padding:5px 0; border-bottom:1px dotted var(--rule-2)}
 .break .r span:first-child{font-family:var(--display); font-weight:700; letter-spacing:.03em; color:var(--ink)}
 .break .r em{font-style:normal; color:var(--ink-3)}
 .grid{font-family:var(--mono); font-size:15px; line-height:1.3; letter-spacing:.06em}
 .acts{display:flex; gap:6px}
-.btn{flex:1; padding:11px 8px; border:1px solid var(--ink); background:var(--ink); color:var(--paper);
-  font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase; cursor:pointer}
+.btn{flex:1; padding:13px 8px; border:1px solid var(--ink); background:var(--ink); color:var(--paper);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  cursor:pointer; min-height:44px}
 .btn.alt{background:transparent; color:var(--ink)}
 .btn:active{transform:translateY(1px)}
+@media (max-height:680px){
+  .panel{gap:9px; padding:13px}
+  .finalstats{padding-block:10px}
+  .fs .n{font-size:25px} .fs.hero .n{font-size:32px}
+  .break .r{padding:3px 0}
+  .grid{font-size:13px}
+  .btn{padding:11px 8px; min-height:42px}
+}
+/* ---------- short screens: everything must fit above the keyboard ---------- */
+@media (max-height:740px){
+  .sheet{gap:8px; padding-block:10px 10px}
+  /* tiles stop being square so the board can lose height without losing width */
+  .tile{aspect-ratio:auto; height:clamp(38px,6.8vh,50px); font-size:min(5.6vw,24px)}
+  .link{height:9px}
+  .readout{min-height:22px; font-size:12px}
+  .score{padding-block:7px}
+  .score .pts .v{font-size:34px}
+  .kb{gap:4px; padding-top:4px}
+  .key{height:clamp(38px,6.4vh,46px)}
+  .reach .alpha u{height:13px}
+  details{display:none}          /* the ? button in the header covers this */
+}
+@media (max-height:640px){
+  .sheet{gap:6px}
+  .mast h1{font-size:20px}
+  .carrybar{min-height:22px}
+  .chip{width:21px; height:21px; font-size:12px}
+}
+@media (max-height:580px){
+  .sheet{gap:5px; padding-block:8px 8px}
+  .tile{height:clamp(32px,6.1vh,44px); font-size:min(5.2vw,21px)}
+  .key{height:clamp(34px,6vh,42px)}
+  .link{height:7px}
+  .reach .alpha u{height:10px; font-size:6.5px}   /* shrink the rail, never hide it */
+  .score .pts .v{font-size:28px}
+  .rowpts .b{font-size:10px} .rowpts .t{font-size:8px}
+}
+/* ---------- narrow screens ---------- */
+@media (max-width:360px){
+  .sheet{padding-inline:12px}
+  .row,.link{grid-template-columns:repeat(5,1fr) 34px; gap:5px}
+  .rowpts .b{font-size:10.5px}
+  .finalstats{grid-template-columns:1.2fr 1fr 1fr; gap:4px}
+  .fs .n{font-size:24px} .fs.hero .n{font-size:30px}
+  .key{font-size:13px}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important; animation-iteration-count:1!important; transition-duration:.001ms!important}
 }
@@ -928,7 +985,7 @@ details[open] summary::before{content:"\2013 "}
     try{localStorage.setItem("carryover:help1","1")}catch(e){}
   }
   function showResults(){
-    var found=lettersFound();
+    var found=lettersFound(), canShare=!!(navigator.share);
     var rows=S.words.slice(1).map(function(o){
       var tags=[];
       tags.push(o.letters&&o.letters.length?o.letters.join("").toUpperCase():"no new letters");
@@ -939,29 +996,55 @@ details[open] summary::before{content:"\2013 "}
     $("panel").innerHTML=
       '<button class="close" id="bClose" type="button" aria-label="Close">×</button>'+
       '<div class="rank">'+rankFor(found)+'</div>'+
-      '<h2>'+S.words.map(function(o){return o.w.toUpperCase()}).join(' <em>→</em> ')+'</h2>'+
-      '<div class="bigscore"><span class="n">'+found+'</span>'+
-        '<span class="d">of '+TARGET_LETTERS+' letters found<br>'+S.score+
-        ' points · '+fmtTime(S.elapsed)+'</span></div>'+
+      '<div class="finalstats">'+
+        '<div class="fs hero"><span class="n">'+S.score+'</span><span class="k">points</span></div>'+
+        '<div class="fs"><span class="n">'+found+'/'+TARGET_LETTERS+'</span><span class="k">letters</span></div>'+
+        '<div class="fs"><span class="n">'+fmtTime(S.elapsed)+'</span><span class="k">time</span></div>'+
+      '</div>'+
+      '<div class="chainline">'+S.words.map(function(o){return o.w.toUpperCase()})
+        .join(' <em>→</em> ')+'</div>'+
       '<div class="break">'+rows+'</div>'+
       '<div class="grid">'+shareGrid().split("\n").join("<br>")+'</div>'+
+      '<div class="acts"><button class="btn" id="bShare" type="button">'+
+        (canShare?"Share result":"Copy result")+'</button></div>'+
       '<div class="acts">'+
-        '<button class="btn" id="bCopy" type="button">Copy result</button>'+
+        (canShare?'<button class="btn alt" id="bCopy" type="button">Copy</button>':'')+
         '<button class="btn alt" id="bAgain" type="button">Random chain</button>'+
       '</div>';
     $("overlay").hidden=false;
     $("bClose").addEventListener("click",closeOverlay);
-    $("bCopy").addEventListener("click",function(){
-      var head=S.mode==="practice"?"Carryover (practice)":"Carryover "+S.label.replace(/<[^>]+>/g," ").trim().split("  ")[0];
+
+    function resultText(){
+      /* S.label is "<b>No. 266</b>Sep 23, 2026" — the bolded half is the puzzle number */
+      var num=S.label.match(/<b>(.*?)<\/b>/);
+      var head=S.mode==="practice"?"Carryover (practice)"
+              :"Carryover "+(num?num[1]:"").trim();
       var txt=head+" — "+found+"/"+TARGET_LETTERS+" letters · "+S.score+
               " pts · "+fmtTime(S.elapsed)+"\n\n"+shareGrid();
+      /* only attach a link people can actually open */
+      if(location.hostname&&location.hostname.indexOf("claude.ai")<0&&location.protocol.indexOf("http")===0)
+        txt+="\n\n"+location.origin+location.pathname;
+      return txt;
+    }
+    function flash(btn,msg,back){
+      if(!btn)return; btn.textContent=msg;
+      setTimeout(function(){if(btn.parentNode)btn.textContent=back},1700);
+    }
+    function copyText(btn,back){
+      var txt=resultText();
       if(navigator.clipboard&&navigator.clipboard.writeText){
-        navigator.clipboard.writeText(txt).then(function(){
-          $("bCopy").textContent="Copied";
-          setTimeout(function(){var b=$("bCopy");if(b)b.textContent="Copy result"},1600);
-        },function(){$("bCopy").textContent="Copy failed"});
-      }else $("bCopy").textContent="Copy failed";
+        navigator.clipboard.writeText(txt).then(function(){flash(btn,"Copied",back)},
+                                               function(){flash(btn,"Copy failed",back)});
+      }else flash(btn,"Copy failed",back);
+    }
+    $("bShare").addEventListener("click",function(){
+      var btn=this;
+      if(navigator.share){
+        navigator.share({title:"Carryover",text:resultText()})
+          .catch(function(){});   /* cancelling the sheet is not an error */
+      }else copyText(btn,"Copy result");
     });
+    if($("bCopy"))$("bCopy").addEventListener("click",function(){copyText(this,"Copy")});
     $("bAgain").addEventListener("click",function(){closeOverlay();newGame("practice")});
   }
   document.getElementById("overlay").addEventListener("click",function(e){
