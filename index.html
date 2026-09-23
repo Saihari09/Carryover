@@ -94,14 +94,27 @@ h1{font-size:23px; font-weight:800; letter-spacing:-.028em; margin:0; line-heigh
 
 /* ---------- board ---------- */
 .board{display:flex; flex-direction:column}
-.row{display:grid; grid-template-columns:repeat(5,1fr) 34px; gap:7px}
-.link{display:grid; grid-template-columns:repeat(5,1fr) 34px; gap:7px; height:13px}
-.rowpts{display:grid; place-items:center; font-family:var(--mono); font-size:11px;
-  font-variant-numeric:tabular-nums; color:transparent; transition:color .2s}
-.rowpts.earned{color:var(--ink-2)}
-.rowpts.live{color:var(--good); font-weight:500}
-.rowpts.live.warm{color:var(--fresh)}
-.rowpts.live.cold{color:var(--ink-3); opacity:.6}
+.row{display:grid; grid-template-columns:repeat(5,1fr) 40px; gap:7px}
+.link{display:grid; grid-template-columns:repeat(5,1fr) 40px; gap:7px; height:13px}
+.rowpts{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+  font-family:var(--mono); font-variant-numeric:tabular-nums; line-height:1.1}
+.rowpts .b{font-size:11.5px; font-weight:500; color:transparent}
+.rowpts .t{font-size:9px; color:transparent; letter-spacing:-.02em}
+.rowpts.earned .b{color:var(--ink-2)}
+/* the three pressure states */
+.rowpts.live.hot   .b,.rowpts.live.hot   .t{color:var(--good)}
+.rowpts.live.warm  .b,.rowpts.live.warm  .t{color:var(--fresh)}
+.rowpts.live.cold  .b{color:var(--ink)}
+.rowpts.live.cold  .t{color:transparent}
+.rowpts.live .t{opacity:.8}
+.rowpts.live.tick .t{animation:tick .3s ease}
+@keyframes tick{40%{transform:scale(1.3)}}
+/* draining bar under the row being typed into */
+.link.timer .track{grid-column:1 / 6; align-self:center; height:3px; background:var(--rule-2); overflow:hidden}
+.link.timer .track i{display:block; height:100%; width:100%; background:var(--good);
+  transition:width .26s linear, background .3s ease}
+.link.timer .track i.warm{background:var(--fresh)}
+.link.timer .track i.cold{background:var(--ink); opacity:.22}
 .rowpts.pulse{animation:ptsin .5s cubic-bezier(.2,1.3,.4,1) both}
 @keyframes ptsin{from{transform:scale(.4) translateX(-6px);opacity:0}to{transform:none;opacity:1}}
 .link i{justify-self:center; width:1px; height:100%; background:var(--rule-2)}
@@ -359,10 +372,13 @@ details[open] summary::before{content:"\2013 "}
       <div class="r"><span>two new letters</span><b>30</b></div>
       <div class="r"><span>one new letter</span><b>10</b></div>
       <div class="r"><span>rare letters pay more</span><b>Z +10 · K +5 · E +1</b></div>
-      <div class="r"><span>played within 15s / 40s</span><b>+10 / +5</b></div>
+      <div class="r"><span><b style="color:var(--good)">green</b> — first 15s</span><b>+10</b></div>
+      <div class="r"><span><b style="color:var(--fresh)">amber</b> — up to 40s</span><b>+5</b></div>
+      <div class="r"><span>after that</span><b>0</b></div>
       <div class="r tot"><span>CHERT, quickly</span><b>30 + C3 + T1 + fast10 = 44</b></div>
     </div>
-    <p>The clock restarts on every word, so one long think won’t sink the run.</p>
+    <p>A countdown sits beside the row you’re typing into, with a bar draining underneath it.
+       The clock restarts on every word, so one long think won’t sink the run.</p>
   </div>
 
   <button class="btn" id="bPlay" type="button">Start playing</button>
@@ -568,7 +584,7 @@ details[open] summary::before{content:"\2013 "}
       S.elapsed=Math.floor((Date.now()-S.start)/1000);
       $("sTime").textContent=fmtTime(S.elapsed);
       paintSpeed();
-    },500);
+    },250);
   }
   function fmtTime(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 
@@ -596,11 +612,21 @@ details[open] summary::before{content:"\2013 "}
   function ptsEl(txt,cls){
     var d=document.createElement("div");
     d.className="rowpts"+(cls?" "+cls:"");
-    d.textContent=txt||"";
+    var b=document.createElement("span"); b.className="b"; b.textContent=txt||"";
+    var t=document.createElement("span"); t.className="t";
+    d.appendChild(b); d.appendChild(t);
     return d;
   }
-  function linkEl(marks){
-    var l=document.createElement("div"); l.className="link";
+  function linkEl(marks,isTimer){
+    var l=document.createElement("div");
+    if(isTimer){
+      l.className="link timer";
+      var track=document.createElement("div"); track.className="track";
+      track.appendChild(document.createElement("i"));
+      l.appendChild(track);
+      return l;
+    }
+    l.className="link";
     for(var i=0;i<5;i++){
       var t=document.createElement("i");
       if(marks&&marks.indexOf(i)>=0)t.className="on";
@@ -653,7 +679,10 @@ details[open] summary::before{content:"\2013 "}
         if(jt&&jt.classList.contains("tile"))jt.classList.add("ink");
       }
       board.appendChild(row);
-      if(r<CHAIN-1)board.appendChild(linkEl(r===S.words.length-1&&!S.done?S.hl:null));
+      if(r<CHAIN-1){
+        var carry=(r===S.words.length-1&&!S.done)?S.hl:null;
+        board.appendChild(linkEl(carry, r===activeIdx&&!S.done));
+      }
     }
 
     /* carry bar */
@@ -716,12 +745,29 @@ details[open] summary::before{content:"\2013 "}
     paintKeys();
   }
 
+  var lastTick=-1;
   function paintSpeed(){
-    var el=document.querySelector(".row.active .rowpts"); if(!el)return;
-    var p=speedPts(Date.now()-S.moveStart);
-    el.textContent=p?"+"+p:"\u2014";
-    el.className="rowpts live"+(p===FAST_PTS?"":p?" warm":" cold");
-    el.title=p?"speed bonus if you play now":"speed bonus gone";
+    var el=document.querySelector(".row.active .rowpts");
+    var fill=document.querySelector(".link.timer .track i");
+    if(!el&&!fill)return;
+    var ms=Date.now()-S.moveStart, p=speedPts(ms), band, left, frac;
+    if(p===FAST_PTS){ band="hot";  left=FAST_MS-ms;        frac=left/FAST_MS }
+    else if(p){       band="warm"; left=OK_MS-ms;          frac=left/(OK_MS-FAST_MS) }
+    else {            band="cold"; left=0;                 frac=0 }
+    var secs=Math.max(0,Math.ceil(left/1000));
+    if(el){
+      var b=el.querySelector(".b"), t=el.querySelector(".t");
+      var changed=(secs!==lastTick);
+      b.textContent = p ? "+"+p : "0";
+      t.textContent = p ? secs+"s" : "";
+      el.className="rowpts live "+band+(changed&&p&&secs<=5?" tick":"");
+      el.title = p ? ("+"+p+" if you play within "+secs+"s") : "speed bonus gone";
+      lastTick=secs;
+    }
+    if(fill){
+      fill.style.width=Math.max(0,Math.min(100,frac*100))+"%";
+      fill.className=band==="hot"?"":band;
+    }
   }
 
   /* ================= keyboard ================= */

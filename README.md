@@ -16,11 +16,16 @@ run finds **8 letters**.
 | Two new letters | **30** |
 | One new letter | **10** |
 | Each new letter's Scrabble value | **+1 to +10** (Z and Q pay) |
-| Word played within 15s / 40s | **+10 / +5** |
+| Word played within 15s | **+10** — countdown reads green |
+| Word played within 40s | **+5** — countdown reads amber |
+| After that | **0** — countdown reads black |
 
-The speed clock restarts on every word, so one long think won't sink a run. The live bonus
-is shown beside the row you're typing into, ticking +10 → +5 → —, and each played word keeps
-its score in the same column.
+A live countdown sits beside the row you're typing into — the bonus on top, seconds left
+below — with a bar draining underneath the row in the same colour. It runs green, then
+amber, then black as each band expires, and the last five seconds of a band pulse. Each
+played word keeps the points it earned in that same column.
+
+The clock restarts on every word, so one long think won't sink a run.
 
 Tap **♪** in the header to mute sound and vibration.
 
