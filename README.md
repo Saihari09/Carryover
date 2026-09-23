@@ -48,6 +48,15 @@ once — so the dictionary only carries the 29,506 words of 3–8 letters with n
 is all the pool can ever spell. Simulation over 120 playthroughs found at least one possible
 word every single time (median 115 available), so the round is never a dead end.
 
+## Your record
+
+The result card keeps games played, current streak, best run and best score, plus a
+distribution of how many letters you find. It lives in `localStorage`, so it is per browser
+and per device — there is no account and nothing leaves the machine.
+
+A leaderboard across players needs a server, which static hosting cannot provide. See
+`docs/leaderboard.md` for the options.
+
 ## Screen sizes
 
 Laid out to fit entirely above the keyboard with no scrolling, verified from 320×568
