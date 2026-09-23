@@ -1,14 +1,9 @@
-# Leaderboard setup (Supabase)
+# Leaderboard (Supabase)
 
-The client is already written. It stays completely hidden until two constants are filled
-in, so nothing is broken while this is unconfigured.
+**Live.** Project `yxpzaxztozmnvvnyddhw`, wired into `index.html`. What follows is the
+setup that was run, for reference or for rebuilding it elsewhere.
 
-## 1. Create the project
-
-New project at [supabase.com](https://supabase.com) — free tier is far beyond what a beta
-needs. Pick any name and region.
-
-## 2. Create the table
+## The table
 
 **SQL Editor → New query**, paste this, run it:
 
@@ -35,20 +30,24 @@ create index scores_day_points on public.scores (day, points desc, seconds asc);
 The `check` constraints are not anti-cheat, they just stop absurd values landing in the
 table. See the note at the bottom.
 
-## 3. Paste the credentials
+## The credentials
 
-**Project Settings → API** gives you a *Project URL* and an *anon public* key. Put them at
-the top of the `<script>` block in `index.html`:
+**Project Settings → API** gives a *Project URL* and an *anon public* key. They sit at the
+top of the `<script>` block in `index.html`:
 
 ```js
 var LB_URL="https://xxxxxxxxxxxx.supabase.co";
 var LB_KEY="eyJhbGciOi...";
 ```
 
-The anon key is designed to be public — it is in every Supabase web app's source. The RLS
-policies above are what actually limit it.
+The anon key is designed to be public — it is in every Supabase web app's source, and this
+one was checked before committing: its JWT payload carries `"role":"anon"`, not
+`service_role`. The RLS policies above are what actually limit it.
 
-Commit, push, and the board appears at the bottom of the result card.
+Verified against the live project: insert works, read works, **update and delete are both
+refused** (the row survives the attempt unchanged), and the check constraints reject absurd
+values. Note that PostgREST answers a blocked UPDATE or DELETE with `204`, the same status
+as a successful one — the only way to tell is to read the row back afterwards.
 
 ## What the player sees
 
