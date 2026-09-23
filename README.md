@@ -7,7 +7,7 @@ three, in any position. Do that four times. The catch: a letter only scores the 
 time the chain ever sees it, and each word can bring in at most two new ones. So a perfect
 run finds **8 letters**.
 
-**Play it:** https://YOUR-USERNAME.github.io/carryover/
+**Play it:** https://saihari09.github.io/Carryover/
 
 ## Scoring
 
@@ -55,9 +55,9 @@ Then open http://localhost:8791.
 
 ## Deploying to GitHub Pages
 
-Push this directory to a repo, then in **Settings → Pages** set *Source* to
-"Deploy from a branch", branch `main`, folder `/ (root)`. The site appears at
-`https://<username>.github.io/<repo>/` within a minute or so.
+In **Settings → Pages** set *Source* to "Deploy from a branch", branch `main`, folder
+`/ (root)`. The site goes live at https://saihari09.github.io/Carryover/ within a minute
+or two of the first push.
 
 ## What's in here
 
