@@ -51,10 +51,23 @@ as a successful one — the only way to tell is to read the row back afterwards.
 
 ## What the player sees
 
-A name field and a **Post** button on the result card, then the day's top 20 ordered by
-points, ties broken by time, with their own row highlighted. One post per browser per day;
-the field disappears once posted. A new board every day, because rows are keyed on the
-puzzle number.
+After the result card lands, a prompt invites them onto the board, showing the score and
+streak they are about to post. **Join the board** posts it; **Not now** is remembered and
+never asks again, leaving a small *join the board* link on the board instead. Once a name
+is known the game posts automatically each day without asking, and offers *change name*.
+
+The board shows the day's top 20 ordered by points, ties broken by time, with each player's
+**streak** and letters, and their own row highlighted.
+
+### Streak without a schema change
+
+The board fetches the last 30 days in one request and works each player's streak out from
+which days their name appears on — consecutive days counting back from today. No extra
+column, no write path to keep in sync. A name appearing twice on one day (someone cleared
+site data and posted again) collapses to their best score, so a name is never listed twice.
+
+Because a streak is keyed on the *name*, two players choosing the same name share a streak.
+Fine at friends scale; it is the same trade as the forgeable scores.
 
 If the network fails or the credentials are wrong, it says *board unavailable* and the rest
 of the result card is unaffected.
