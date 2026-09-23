@@ -62,6 +62,10 @@ img{max-width:100%}
   --shadow:0 1px 0 rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
+/* double-tap on a key must register as two taps, not a zoom gesture.
+   Scoped to controls so pinch-to-zoom still works on the page. */
+button,.key,.tile,.chip,.helpq,.linkbtn,.btn,summary{
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
   margin:0; background:var(--paper); color:var(--ink);
@@ -348,6 +352,62 @@ details[open] summary::before{content:"\2013 "}
   .finalstats{grid-template-columns:1.2fr 1fr 1fr; gap:4px}
   .fs .n{font-size:24px} .fs.hero .n{font-size:30px}
   .key{font-size:13px}
+}
+/* ---------- fit the visible viewport, not the layout viewport ----------
+   iOS reports height:100% against a viewport that includes the area behind the
+   URL bar, so a layout that measures fine in a simulator still scrolls on a real
+   phone. svh is the viewport at its SMALLEST (chrome showing), so sizing from it
+   guarantees the board and the keyboard share one screen. Sits after the px
+   media queries above so it wins wherever it is supported. */
+@supports (height:100svh){
+  .sheet{
+    min-height:100svh;
+    gap:clamp(5px,1.35svh,13px);
+    /* derive the whole column's width from the height budget, so tiles stay square */
+    max-width:min(432px, calc(6.3svh * 5 + 107px));
+  }
+  .tile{aspect-ratio:1/1; height:auto; font-size:min(4.4svh,26px)}
+  .link{height:clamp(6px,1.1svh,13px)}
+  .kb{gap:clamp(4px,.6svh,5px); padding-top:clamp(2px,.5svh,8px)}
+  .key{height:clamp(30px,5.4svh,48px); font-size:min(1.9svh,14px)}
+  .reach .alpha u{height:clamp(9px,1.7svh,15px)}
+  .readout{min-height:clamp(18px,3.4svh,30px)}
+  .score{padding-block:clamp(5px,1.2svh,10px)}
+  .score .pts .v{font-size:clamp(26px,4.9svh,40px)}
+  .carrybar{min-height:clamp(20px,3.6svh,26px)}
+  .chip{width:clamp(26px,4.4svh,34px); height:clamp(26px,4.4svh,34px); font-size:clamp(15px,2.5svh,19px)}
+}
+/* the tightest real case: a short phone with the browser chrome showing */
+@supports (height:100svh){
+  @media (max-height:665px){
+    .sheet{gap:4px; padding-block:6px 6px}
+    .mast h1{font-size:18px}
+    .regmark{width:14px; height:14px}
+    .helpq{width:23px; height:23px; font-size:12px}
+    .carrybar{min-height:18px}
+    .tile{font-size:min(4.2svh,22px)}
+    .link{height:5px}
+    .readout{min-height:16px; font-size:11.5px; gap:5px}
+    .score{padding-block:4px}
+    .score .pts .v{font-size:clamp(22px,4.2svh,28px)}
+    .score .side .v{font-size:13px}
+    .reach .alphahead .lbl{font-size:8px}
+    .reach .alpha u{height:9px; font-size:6px}
+    .kb{gap:3px; padding-top:2px}
+    .key{height:clamp(28px,5.1svh,40px); font-size:12.5px}
+  }
+}
+@supports (height:100svh){
+  @media (max-height:548px){
+    .sheet{gap:3px; padding-block:4px 4px}
+    .link{height:4px}
+    .readout{min-height:14px; font-size:11px}
+    .reach .alphahead{display:none}      /* last thing to go; the rail itself stays */
+    .reach .alpha u{height:8px; font-size:0}
+    .kb{gap:3px; padding-top:0}
+    .key{height:clamp(26px,5svh,34px)}
+    .score .pts .v{font-size:21px}
+  }
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important; animation-iteration-count:1!important; transition-duration:.001ms!important}
