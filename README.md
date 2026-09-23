@@ -37,6 +37,17 @@ A move only needs *one* letter the previous word lacks to be legal — but scori
 letters new to the **whole chain**. So a legal move can score zero. Seeing that coming is
 the game.
 
+## Bonus round
+
+When the chain ends you get **30 seconds** to spend the letters you found: tap them (or type)
+to build any word, submit as many as you like, best one counts. **7 points a letter**, plus
+**20** for using every letter in the pool.
+
+A bonus word can never repeat a letter, because the pool holds each found letter exactly
+once — so the dictionary only carries the 29,506 words of 3–8 letters with no repeat, which
+is all the pool can ever spell. Simulation over 120 playthroughs found at least one possible
+word every single time (median 115 available), so the round is never a dead end.
+
 ## Screen sizes
 
 Laid out to fit entirely above the keyboard with no scrolling, verified from 320×568
@@ -65,6 +76,7 @@ or two of the first push.
 |---|---|
 | `index.html` | the whole game — markup, styles and logic, no dependencies |
 | `words.js` | 14,855 accepted five-letter words; 2,315 of them marked "everyday" and used for seeds and the "N fit" counter |
+| `bonus.js` | 29,506 words of 3–8 letters with no repeated letter, for the bonus round |
 
 The puzzle is seeded from the date, so everyone gets the same chain on the same day.
 Progress is kept in `localStorage`, per browser.
