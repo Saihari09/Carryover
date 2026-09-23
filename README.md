@@ -18,7 +18,11 @@ run finds **8 letters**.
 | Each new letter's Scrabble value | **+1 to +10** (Z and Q pay) |
 | Word played within 15s / 40s | **+10 / +5** |
 
-The speed clock restarts on every word, so one long think won't sink a run.
+The speed clock restarts on every word, so one long think won't sink a run. The live bonus
+is shown beside the row you're typing into, ticking +10 → +5 → —, and each played word keeps
+its score in the same column.
+
+Tap **♪** in the header to mute sound and vibration.
 
 A move only needs *one* letter the previous word lacks to be legal — but scoring counts
 letters new to the **whole chain**. So a legal move can score zero. Seeing that coming is
@@ -60,6 +64,8 @@ Things worth telling me about:
   explaining it.
 - **Whether the speed bonus felt motivating or stressful.** It's the part I'm least sure about.
 - Anything that looked broken on your phone.
+- **Whether the sound and vibration helped or annoyed.** Vibration only works on Android —
+  iOS Safari has no Vibration API — so iPhone testers get sound and animation only.
 
 Known and deliberate: a sharp player reaches 8/8 on most puzzles, so the letter count is a
 completion badge and the points are the real competition.
