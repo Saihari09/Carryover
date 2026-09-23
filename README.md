@@ -54,8 +54,8 @@ The result card keeps games played, current streak, best run and best score, plu
 distribution of how many letters you find. It lives in `localStorage`, so it is per browser
 and per device — there is no account and nothing leaves the machine.
 
-A leaderboard across players needs a server, which static hosting cannot provide. See
-`docs/leaderboard.md` for the options.
+A daily leaderboard is built and waiting on two constants — see `docs/leaderboard.md` to
+point it at a Supabase project. Until those are filled in it stays hidden.
 
 ## Screen sizes
 

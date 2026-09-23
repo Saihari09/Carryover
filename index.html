@@ -266,6 +266,29 @@ details[open] summary::before{content:"\2013 "}
 .helpq:hover{background:var(--sunk); color:var(--ink)}
 .helpq.off{color:var(--ink-3); opacity:.55; text-decoration:line-through}
 
+/* ---------- leaderboard ---------- */
+.lb{display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--rule); padding-top:11px}
+.lbhead{display:flex; align-items:baseline; justify-content:space-between; gap:8px}
+.lbstate{font-family:var(--mono); font-size:9.5px; color:var(--ink-3)}
+.lbstate.err{color:var(--warn)}
+.lbform{display:flex; gap:6px}
+.lbform input{flex:1 1 auto; min-width:0; padding:10px; border:1px solid var(--rule);
+  background:var(--card); color:var(--ink); font-family:var(--display); font-size:14px;
+  font-weight:600; border-radius:0}
+.lbform input:focus{outline:2px solid var(--reg-solid); outline-offset:-1px}
+.lbform .btn{flex:0 0 auto; padding-inline:14px}
+.lbrows{display:flex; flex-direction:column}
+.lbrow{display:grid; grid-template-columns:22px 1fr auto auto; gap:8px; align-items:baseline;
+  padding:5px 0; border-bottom:1px dotted var(--rule-2); font-family:var(--mono); font-size:11px}
+.lbrow .rk{color:var(--ink-3); font-variant-numeric:tabular-nums}
+.lbrow .nm{font-family:var(--display); font-weight:600; font-size:13px; color:var(--ink);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.lbrow .lt{color:var(--ink-3)}
+.lbrow .pt2{font-weight:500; color:var(--ink); font-variant-numeric:tabular-nums}
+.lbrow.me{background:var(--reg-soft); margin-inline:-6px; padding-inline:6px}
+.lbrow.me .nm{color:var(--reg)}
+.lbempty{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); padding:6px 0}
+
 /* ---------- personal record ---------- */
 .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
   border-top:1px solid var(--rule); padding-top:11px}
@@ -580,6 +603,21 @@ details[open] summary::before{content:"\2013 "}
           o:1,p:3,q:10,r:1,s:1,t:1,u:1,v:4,w:4,x:8,y:4,z:10};
   var FAST_MS=15000, OK_MS=40000, FAST_PTS=10, OK_PTS=5;
   var BONUS_SECS=30, BONUS_PER=7, BONUS_ALL=20, BONUS_MIN=3;
+
+  /* ===== LEADERBOARD CONFIG =========================================
+     Paste your Supabase project URL and anon key here and the board
+     appears. Left empty, everything below stays hidden and the game is
+     unaffected. The anon key is meant to be public; the table's policy
+     is what limits it (see docs/leaderboard.md).                      */
+  var LB_URL="";
+  var LB_KEY="";
+  /* ================================================================== */
+  function lbOn(){return !!(LB_URL&&LB_KEY)}
+  function lbHeaders(extra){
+    var h={"apikey":LB_KEY,"Authorization":"Bearer "+LB_KEY};
+    if(extra)for(var k in extra)h[k]=extra[k];
+    return h;
+  }
   var BAND_LO=8, BAND_HI=60, TARGET=20;
   var ALPHA="abcdefghijklmnopqrstuvwxyz";
   var COMBOS=[];
@@ -1258,6 +1296,96 @@ details[open] summary::before{content:"\2013 "}
     return h;
   }
 
+  /* ================= leaderboard =================
+     Scores are posted by the browser, so they are forgeable by anyone who
+     wants to; that is a deliberate trade for a friends-scale board. The
+     table's constraints keep values in a sane range. */
+  function lbKeyToday(){return "carryover:posted:"+epochDay(new Date())}
+  function lbAlreadyPosted(){
+    try{return JSON.parse(localStorage.getItem(lbKeyToday())||"null")}catch(e){return null}
+  }
+  function lbState(txt,err){
+    var el=$("lbState"); if(!el)return;
+    el.textContent=txt||""; el.className="lbstate"+(err?" err":"");
+  }
+  function lbPost(name,total,found,cb){
+    fetch(LB_URL+"/rest/v1/scores",{
+      method:"POST",
+      headers:lbHeaders({"Content-Type":"application/json","Prefer":"return=minimal"}),
+      body:JSON.stringify({day:epochDay(new Date()),name:name,points:total,
+                           letters:found,seconds:S.elapsed})
+    }).then(function(r){
+      if(!r.ok)throw new Error("HTTP "+r.status);
+      try{localStorage.setItem(lbKeyToday(),JSON.stringify({name:name,points:total}))}catch(e){}
+      cb(null);
+    }).catch(function(e){cb(e)});
+  }
+  function lbLoad(){
+    lbState("loading"+"\u2026");
+    fetch(LB_URL+"/rest/v1/scores?day=eq."+epochDay(new Date())+
+          "&select=name,points,letters,seconds&order=points.desc,seconds.asc&limit=20",
+          {headers:lbHeaders()})
+      .then(function(r){ if(!r.ok)throw new Error("HTTP "+r.status); return r.json() })
+      .then(function(rows){ lbRender(rows); lbState(rows.length?rows.length+" today":"") })
+      .catch(function(e){ lbState("board unavailable",true); lbRender(null) });
+  }
+  function lbRender(rows){
+    var host=$("lbRows"); if(!host)return;
+    host.innerHTML="";
+    if(!rows){return}
+    if(!rows.length){
+      host.innerHTML='<div class="lbempty">No one has posted today. Be first.</div>';
+      return;
+    }
+    var mine=lbAlreadyPosted();
+    rows.forEach(function(r,i){
+      var d=document.createElement("div");
+      var isMe=mine&&r.name===mine.name&&r.points===mine.points;
+      d.className="lbrow"+(isMe?" me":"");
+      d.innerHTML='<span class="rk">'+(i+1)+'</span>'+
+                  '<span class="nm"></span>'+
+                  '<span class="lt">'+(r.letters||0)+'/'+TARGET_LETTERS+'</span>'+
+                  '<span class="pt2">'+(r.points||0)+'</span>';
+      d.querySelector(".nm").textContent=r.name||"Someone";   /* never innerHTML: names are untrusted */
+      host.appendChild(d);
+    });
+  }
+  function leaderboardHTML(){
+    if(!lbOn())return "";
+    var posted=lbAlreadyPosted();
+    return '<div class="lb">'+
+      '<div class="lbhead"><span class="dlbl">Today'+'’'+'s board</span>'+
+      '<span class="lbstate" id="lbState"></span></div>'+
+      (posted?'':'<div class="lbform"><input id="lbName" maxlength="16" placeholder="your name" '+
+               'autocomplete="nickname" spellcheck="false">'+
+               '<button class="btn" id="lbSend" type="button">Post</button></div>')+
+      '<div class="lbrows" id="lbRows"></div></div>';
+  }
+  function wireLeaderboard(total,found){
+    if(!lbOn())return;
+    var send=$("lbSend"), nameEl=$("lbName");
+    if(nameEl){
+      try{nameEl.value=localStorage.getItem("carryover:name")||""}catch(e){}
+      nameEl.addEventListener("keydown",function(e){
+        e.stopPropagation();                       /* the board must not type into the game */
+        if(e.key==="Enter"&&send)send.click();
+      });
+    }
+    if(send)send.addEventListener("click",function(){
+      var nm=(nameEl&&nameEl.value||"").trim().slice(0,16);
+      if(!nm)return lbState("name first",true);
+      try{localStorage.setItem("carryover:name",nm)}catch(e){}
+      send.disabled=true; lbState("posting"+"\u2026");
+      lbPost(nm,total,found,function(err){
+        send.disabled=false;
+        if(err){lbState("could not post",true);return}
+        var f=document.querySelector(".lbform"); if(f)f.remove();
+        lbLoad();
+      });
+    });
+    lbLoad();
+  }
+
   /* ================= results ================= */
   function rankFor(letters){
     if(letters>=8)return "Full register";
@@ -1405,6 +1533,7 @@ details[open] summary::before{content:"\2013 "}
       '<div class="break">'+rows+'</div>'+
       '<div class="grid">'+shareGrid().split("\n").join("<br>")+'</div>'+
       statsHTML()+
+      leaderboardHTML()+
       '<div class="acts"><button class="btn" id="bShare" type="button">'+
         (canShare?"Share result":"Copy result")+'</button></div>'+
       '<div class="acts">'+
@@ -1413,6 +1542,7 @@ details[open] summary::before{content:"\2013 "}
       '</div>';
     $("overlay").hidden=false;
     $("bClose").addEventListener("click",closeOverlay);
+    wireLeaderboard(total,found);
 
     function resultText(){
       /* S.label is "<b>No. 266</b>Sep 23, 2026" — the bolded half is the puzzle number */
