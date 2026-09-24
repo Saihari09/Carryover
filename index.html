@@ -303,12 +303,18 @@ details[open] summary::before{content:"\2013 "}
 .sptag{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--ink-3); opacity:0; animation:spfade .45s ease 1.18s both}
 @keyframes spfade{to{opacity:1}}
-/* the titles settle, then the way in appears */
-.spactions{display:flex; flex-direction:column; align-items:center; gap:11px; margin-top:8px;
+/* The titles settle, then the way in appears.
+   Two separate guards against opening the instructions by accident:
+   the secondary link sits well clear of Start's bottom edge, and nothing is
+   tappable until the reveal has finished moving. */
+.spactions{display:flex; flex-direction:column; align-items:center; gap:26px; margin-top:10px;
   opacity:0; transform:translateY(6px); pointer-events:none;
   transition:opacity .38s ease, transform .38s cubic-bezier(.2,1,.3,1)}
-.splash.ready .spactions{opacity:1; transform:none; pointer-events:auto}
-.spactions .btn{min-width:186px; padding-block:14px}
+.splash.ready  .spactions{opacity:1; transform:none}
+.splash.armed  .spactions{pointer-events:auto}
+.spactions .btn{min-width:200px; padding-block:16px}
+.spactions .linkbtn{display:inline-flex; align-items:center; justify-content:center;
+  min-height:44px; padding:0 20px}
 
 /* ---------- name prompt ---------- */
 .np{position:fixed; inset:0; z-index:62; display:grid; place-items:center; padding:16px;
@@ -1762,13 +1768,19 @@ details[open] summary::before{content:"\2013 "}
     var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     sp.hidden=false;
     var over=false;
-    function ready(){sp.classList.add("ready")}
+    function ready(){
+      if(sp.classList.contains("ready"))return;
+      sp.classList.add("ready");
+      /* only accept taps once the buttons have stopped moving, so the tap that
+         reveals them cannot also land on one */
+      setTimeout(function(){sp.classList.add("armed")},420);
+    }
     function go(withHelp){
       if(over)return; over=true;
       document.removeEventListener("keydown",onKey,true);
       sp.classList.add("out");
       setTimeout(function(){
-        sp.hidden=true; sp.classList.remove("out","ready");
+        sp.hidden=true; sp.classList.remove("out","ready","armed");
         inputLockUntil=Date.now()+250;   /* the starting tap must not reach the board */
         done(withHelp);
       },320);
