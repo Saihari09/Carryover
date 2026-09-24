@@ -27,11 +27,23 @@ played word keeps the points it earned in that same column.
 
 The clock restarts on every word, so one long think won't sink a run.
 
+The titles animate, then a **Start** button waits — the clock only begins when you press it.
+First-time players get the walkthrough after Start; everyone else goes straight in, with
+**How to play** always on the start screen and behind the **?** in the header.
+
 Tap **♪** in the header to mute sound and vibration.
 
 At the end you get points, letters and time as three headline numbers, a per-word breakdown,
 and a spoiler-free grid. **Share result** opens the phone's native share sheet where one
 exists (and attaches the game's link); elsewhere it falls back to copying to the clipboard.
+
+The shared text never names your leftover word — only how long it was, so it reads as a
+brag rather than a spoiler:
+
+```
+Carryover No. 267 — 5/8 letters · 138 pts · 0:05
+Leftover bonus: 4 letters (+28)
+```
 
 A move only needs *one* letter the previous word lacks to be legal — but scoring counts
 letters new to the **whole chain**. So a legal move can score zero. Seeing that coming is
