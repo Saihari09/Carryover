@@ -52,8 +52,11 @@ the game.
 ## Bonus round
 
 When the chain ends you get **30 seconds** to spend the letters you found: tap them (or type)
-to build any word, submit as many as you like, best one counts. **7 points a letter**, plus
-**20** for using every letter in the pool.
+to build any word of **3 to 8 letters**, each letter usable once. Submit as many as you like
+— only your best counts. **7 points a letter**, plus **20** for using every letter in the pool.
+
+The rules are on the round itself under *How it scores*, and in the walkthrough as its own
+step, so nobody meets the round cold.
 
 A bonus word can never repeat a letter, because the pool holds each found letter exactly
 once — so the dictionary only carries the 29,506 words of 3–8 letters with no repeat, which
