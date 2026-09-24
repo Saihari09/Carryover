@@ -496,6 +496,15 @@ details[open] summary::before{content:"\2013 "}
   .score .pts .v{font-size:28px}
   .rowpts .b{font-size:10px} .rowpts .t{font-size:8px}
 }
+/* the keyboard is the thing fingers aim at: give it the whole screen */
+@media (max-width:430px){
+  .kb{margin-inline:-9px}
+  .key{font-size:14.5px}
+}
+@media (max-width:360px){
+  .kb{margin-inline:-7px}
+}
+
 /* ---------- narrow screens ---------- */
 @media (max-width:360px){
   .sheet{padding-inline:12px}
@@ -512,13 +521,12 @@ details[open] summary::before{content:"\2013 "}
    guarantees the board and the keyboard share one screen. Sits after the px
    media queries above so it wins wherever it is supported. */
 @supports (height:100svh){
-  .sheet{
-    min-height:100svh;
-    gap:clamp(5px,1.35svh,13px);
-    /* derive the whole column's width from the height budget, so tiles stay square */
-    max-width:min(432px, calc(6.3svh * 5 + 107px));
-  }
-  .tile{aspect-ratio:1/1; height:auto; font-size:min(4.4svh,26px)}
+  .sheet{min-height:100svh; gap:clamp(5px,1.35svh,13px)}
+  /* Only the BOARD is bound by the height budget — it has to stay square, so its
+     width follows from how much height there is. Binding the whole column to that
+     squeezed the keyboard into the middle of the screen and left dead gutters. */
+  .board{width:100%; margin-inline:auto; max-width:min(100%, calc(7svh * 5 + 75px))}
+  .tile{aspect-ratio:1/1; height:auto; font-size:min(4.8svh,28px)}
   .link{height:clamp(6px,1.1svh,13px)}
   .kb{gap:clamp(4px,.6svh,5px); padding-top:clamp(2px,.5svh,8px)}
   .key{height:clamp(30px,5.4svh,48px); font-size:min(1.9svh,14px)}
